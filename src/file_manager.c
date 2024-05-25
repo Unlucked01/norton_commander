@@ -11,7 +11,7 @@ int main() {
 	char left_path[FILE_NAME_LEN] = ".";
 	char right_path[FILE_NAME_LEN] = ".";
 
-	// displaylogo();
+	displaylogo();
 	clrscr();
 	display_commands();
 
