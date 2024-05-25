@@ -3,7 +3,7 @@
 #include "file_operations.h"
 #include "inttypes.h"
 
-void handle_input(FileInfo *files, int *count, int *selection, bool *is_left_panel, char *current_path) {
+void handle_input(FileInfo *files, int *count, int *selection, bool *is_left_panel, char *current_path, char *opposite_path) {
 	int ch = getch();
 	switch (ch) {
 		case 0:
@@ -39,31 +39,13 @@ void handle_input(FileInfo *files, int *count, int *selection, bool *is_left_pan
 					strcat(current_path, "\\");
 					strcat(current_path, files[*selection].name);
 				}
-				*count = read_directory(current_path, files, 100);
-				*selection = 0;
-				clrscr();
-				display_commands();
+				refresh_directory(files, count, selection, current_path);
 			}
 			break;
 		case 3:// CTRL+C
-			if (!files[*selection].is_dir) {
-				char destination[FILE_NAME_LEN];
-				gotoxy(1, COMMANDS_ROW);
-				clreol();
-				cprintf("Copying %s to destination...\n", files[*selection].name);
-				gotoxy(1, COMMANDS_ROW + 1);
-				clreol();
-				cprintf("Enter destination path: ");
-				fgets(destination, FILE_NAME_LEN, stdin);
-				destination[strcspn(destination, "\n")] = '\0';// Remove newline character if present
-				if (copy_file(files[*selection].path, destination) == 0) {
-					gotoxy(1, COMMANDS_ROW + 1);
-					clreol();
-					cprintf("File copied successfully.");
-				}
-				// clrscr();
-				display_commands();
-			}
+			copy_selected_file(files, *selection, current_path, opposite_path);
+			getch();
+			refresh_directory(files, count, selection, current_path);
 			break;
 		case 4:// CTRL+D
 			if (!files[*selection].is_dir) {
@@ -72,26 +54,14 @@ void handle_input(FileInfo *files, int *count, int *selection, bool *is_left_pan
 				clreol();
 				getch();
 				clrscr();
+				refresh_directory(files, count, selection, current_path);
 				display_commands();
 			}
 			break;
 		case 6://CTRL+F
-			if (!files[*selection].is_dir) {
-				char destination[FILE_NAME_LEN];
-				gotoxy(1, COMMANDS_ROW);
-				clreol();
-				cprintf("Moving %s to destination...\n", files[*selection].name);
-				gotoxy(1, COMMANDS_ROW + 1);
-				clreol();
-				cprintf("Enter destination path: ");
-				fgets(destination, FILE_NAME_LEN, stdin);
-				destination[strcspn(destination, "\n")] = '\0';// Remove newline character if present
-				gotoxy(1, COMMANDS_ROW + 1);
-				move_file(files[*selection].path, destination);
-				getch();
-				clrscr();
-				display_commands();
-			}
+			move_selected_file(files, *selection, current_path, opposite_path);
+			getch();
+			refresh_directory(files, count, selection, current_path);
 			break;
 		case 27:// Escape key
 			clrscr();

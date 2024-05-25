@@ -16,7 +16,10 @@
 #define FILE_NAME_LEN 256
 #define COMMANDS_ROW (PANEL_HEIGHT + 1)
 
-#define TEXT_MODE 0x03
+#define LEFT_PANEL_X 1
+#define LEFT_PANEL_Y 1
+#define RIGHT_PANEL_X 40
+#define RIGHT_PANEL_Y 1
 
 typedef struct {
 	char name[FILE_NAME_LEN];
@@ -25,10 +28,11 @@ typedef struct {
 	bool is_dir;
 } FileInfo;
 
+
 void draw_border(int left, int top, int width, int height, const char *path);
 void display_panel(int left, int top, FileInfo *files, int count, int current_selection, bool is_left_panel, const char *current_path);
 void display_commands();
-void handle_input(FileInfo *files, int *count, int *selection, bool *is_left_panel, char *current_path);
+void handle_input(FileInfo *files, int *count, int *selection, bool *is_left_panel, char *current_path, char *opposite_path);
 void displaylogo();
 
 #endif

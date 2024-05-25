@@ -1,4 +1,6 @@
 #include "file_operations.h"
+#include "conio.h"
+#include "file_manager.h"
 
 int copy_file(const char *source, const char *destination) {
 	FILE *src, *dest;
@@ -10,7 +12,6 @@ int copy_file(const char *source, const char *destination) {
 		cprintf("Error opening source file: %s", strerror(errno));
 		return 1;
 	}
-
 	if ((dest = fopen(destination, "wb")) == NULL) {
 		gotoxy(1, COMMANDS_ROW);
 		cprintf("Error opening destination file: %s", strerror(errno));
@@ -26,6 +27,29 @@ int copy_file(const char *source, const char *destination) {
 	fclose(dest);
 
 	return 0;
+}
+
+void copy_selected_file(FileInfo *files, int selection, char *current_path, char *opposite_path) {
+	if (!files[selection].is_dir) {
+		if (strcmp(current_path, opposite_path) == 0) {
+			gotoxy(1, COMMANDS_ROW + 1);
+			clreol();
+			cprintf("Cannot copy to the same directory.");
+			return;
+		}
+
+		char destination[FILE_NAME_LEN];
+		snprintf(destination, FILE_NAME_LEN, "%s\\%s", opposite_path, files[selection].name);
+		int result = copy_file(files[selection].path, destination);
+
+		gotoxy(1, COMMANDS_ROW + 1);
+		clreol();
+		if (result == 0) {
+			cprintf("File copied successfully.");
+		} else {
+			cprintf("Error copying file.");
+		}
+	}
 }
 
 int read_directory(const char *path, FileInfo *files, int max_count) {
@@ -48,6 +72,14 @@ int read_directory(const char *path, FileInfo *files, int max_count) {
 	return count;
 }
 
+void refresh_directory(FileInfo *files, int *count, int *selection, const char *path) {
+	clrscr();// Clear the screen
+	*count = read_directory(path, files, 100);
+	*selection = 0;
+	display_commands();
+}
+
+
 void delete_file(const char *filename) {
 	clreol();
 	if (remove(filename) == 0) {
@@ -57,11 +89,23 @@ void delete_file(const char *filename) {
 	}
 }
 
-void move_file(const char *source, const char *destination) {
-	clreol();
-	if (rename(source, destination) == 0) {
-		cprintf("File moved successfully.");
-	} else {
-		cprintf("Error moving file.");
+void move_selected_file(FileInfo *files, int selection, char *current_path, char *opposite_path) {
+	if (!files[selection].is_dir) {
+		if (strcmp(current_path, opposite_path) == 0) {
+			gotoxy(1, COMMANDS_ROW + 1);
+			clreol();
+			cprintf("Cannot move to the same directory.");
+			return;
+		}
+
+		char destination[FILE_NAME_LEN];
+		snprintf(destination, FILE_NAME_LEN, "%s\\%s", opposite_path, files[selection].name);
+		clreol();
+		if (rename(files[selection].path, destination) == 0) {
+			gotoxy(1, COMMANDS_ROW + 1);
+			cprintf("File moved successfully.");
+		} else {
+			cprintf("Error moving file: %s", strerror(errno));
+		}
 	}
 }
