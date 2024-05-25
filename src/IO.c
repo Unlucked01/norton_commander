@@ -1,8 +1,9 @@
 #include "conio.h"
 #include "file_manager.h"
 #include "file_operations.h"
+#include "inttypes.h"
 
-void handle_input(FileInfo *files, int *count, int *selection, char *current_path) {
+void handle_input(FileInfo *files, int *count, int *selection, bool *is_left_panel, char *current_path) {
 	int ch = getch();
 	switch (ch) {
 		case 0:
@@ -15,7 +16,16 @@ void handle_input(FileInfo *files, int *count, int *selection, char *current_pat
 				case 80:// Down arrow
 					if (*selection < *count - 1) (*selection)++;
 					break;
+				case 75:// Left arrow (switch to left panel)
+					*is_left_panel = true;
+					break;
+				case 77:// Right arrow (switch to right panel)
+					*is_left_panel = false;
+					break;
 			}
+			break;
+		case 9:// Tab key
+			*is_left_panel = !*is_left_panel;
 			break;
 		case 13:// Enter key
 			if (files[*selection].is_dir) {
@@ -84,6 +94,7 @@ void handle_input(FileInfo *files, int *count, int *selection, char *current_pat
 			}
 			break;
 		case 27:// Escape key
+			clrscr();
 			exit(0);
 	}
 }

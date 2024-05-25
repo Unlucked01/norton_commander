@@ -1,5 +1,6 @@
 #include "file_manager.h"
 #include "logos.h"
+#include "stdbool.h"
 #include "stdio.h"
 
 void draw_border(int left, int top, int width, int height, const char *path) {
@@ -36,11 +37,11 @@ void draw_border(int left, int top, int width, int height, const char *path) {
 	putch('+');
 }
 
-void display_panel(int left, int top, FileInfo *files, int count, int current_selection, const char *current_path) {
+void display_panel(int left, int top, FileInfo *files, int count, int current_selection, bool is_panel_active, const char *current_path) {
 	draw_border(left, top, PANEL_WIDTH, PANEL_HEIGHT, current_path);
 	for (int i = 0; i < count && i < PANEL_HEIGHT - 2; i++) {
 		gotoxy(left + 1, top + 1 + i);
-		if (i == current_selection) {
+		if (is_panel_active && i == current_selection) {
 			textbackground(BLUE);
 			textcolor(WHITE);
 		} else {

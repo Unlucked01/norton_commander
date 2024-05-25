@@ -26,9 +26,9 @@ typedef struct {
 } FileInfo;
 
 void draw_border(int left, int top, int width, int height, const char *path);
-void display_panel(int left, int top, FileInfo *files, int count, int current_selection, const char *current_path);
+void display_panel(int left, int top, FileInfo *files, int count, int current_selection, bool is_left_panel, const char *current_path);
 void display_commands();
-void handle_input(FileInfo *files, int *count, int *selection, char *current_path);
+void handle_input(FileInfo *files, int *count, int *selection, bool *is_left_panel, char *current_path);
 void displaylogo();
 
 #endif
